@@ -43,7 +43,8 @@ export default function NoteForm({ onClose}: NoteFormProps) {
 		mutationFn: createNote,
 		onSuccess: () => {
 			createToast();
-			queryClient.invalidateQueries({ queryKey: ['notes'] });
+            queryClient.invalidateQueries({ queryKey: ['notes'] });
+            onClose();
 		},
 		onError: () => {
 			createToastError();
@@ -58,7 +59,6 @@ export default function NoteForm({ onClose}: NoteFormProps) {
         console.log(values);
         actions.resetForm();
         onCreate(values);
-        onClose();
      }
 
     return (

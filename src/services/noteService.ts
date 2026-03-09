@@ -30,18 +30,19 @@ export async function fetchNotes({ searchNote, page }: FetchNotesProps) {
 
 
 export async function deleteNote(id: string): Promise<Note> {
-    const delate = await axios.delete<Note>(`https://notehub-public.goit.study/api/notes/${id}`, {
+    const result = await axios.delete<Note>(`https://notehub-public.goit.study/api/notes/${id}`, {
         headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`
         },
     });
     
-    return delate.data;
+    return result.data;
 }
 
+type CreateNoteProps = Omit<Note, 'id' | 'createdAt' | 'updatedAt'>;
 
-export async function createNote({ title, content, tag }: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>): Promise<Note> {
+export async function createNote({ title, content, tag }: CreateNoteProps): Promise<Note> {
     const create = await axios.post<Note>('https://notehub-public.goit.study/api/notes', {
         title,
         content,
