@@ -20,7 +20,7 @@ export async function fetchNotes({ searchNote, page }: FetchNotesProps) {
         },
         headers: {
             Accept: 'application/json',
-            Authorization: `Bearer ${import.meta.env.VITE_AUTHORIZATION_TOKEN}`
+            Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`
         },
     });
 
@@ -29,11 +29,11 @@ export async function fetchNotes({ searchNote, page }: FetchNotesProps) {
 
 
 
-export async function deleteNote(id: string): Promise<void> {
-    const delate = await axios.delete(`https://notehub-public.goit.study/api/notes/${id}`, {
+export async function deleteNote(id: string): Promise<Note> {
+    const delate = await axios.delete<Note>(`https://notehub-public.goit.study/api/notes/${id}`, {
         headers: {
             Accept: 'application/json',
-            Authorization: `Bearer ${import.meta.env.VITE_AUTHORIZATION_TOKEN}`
+            Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`
         },
     });
     
@@ -41,15 +41,15 @@ export async function deleteNote(id: string): Promise<void> {
 }
 
 
-export async function createNote({ title, content, tag }: Omit<Note, 'id'>) {
-    const create = await axios.post('https://notehub-public.goit.study/api/notes', {
+export async function createNote({ title, content, tag }: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>): Promise<Note> {
+    const create = await axios.post<Note>('https://notehub-public.goit.study/api/notes', {
         title,
         content,
         tag,
     }, {
         headers: {
             Accept: 'application/json',
-            Authorization: `Bearer ${import.meta.env.VITE_AUTHORIZATION_TOKEN}`,
+            Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
         }
     }
     );

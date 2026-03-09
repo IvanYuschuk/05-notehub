@@ -3,12 +3,13 @@ import css from './NoteForm.module.css';
 import { useId } from 'react';
 import type { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createNote } from '../../services/noteService';
+import { toast } from 'react-hot-toast';
 import type { Note } from '../../types/note';
 
 interface NoteFormProps {
     onClose: () => void;
-    onCreate: (note: Omit<Note, 'id'>) => void;
 }
  
 const NoteFormSchema = Yup.object().shape({
@@ -16,14 +17,13 @@ const NoteFormSchema = Yup.object().shape({
         .min(3, 'Title must be at least 3 characters')
         .required('Title is required'),
     content: Yup.string()
-        .min(3, 'Content must be at least 3 characters')
-        .max(50, 'Content must be less than 50 characters'),
+        .max(500, 'Content must be less than 50 characters'),
      tag: Yup.string()
         .oneOf(['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'], 'Invalid tag')
         .required('Tag is required'),
 });
 
-type NoteFormValues = Omit<Note, 'id'>;
+type NoteFormValues  = Omit<Note, 'id' | 'createdAt' | 'updatedAt'>;
 
 const initialValues: NoteFormValues = {
     title: '',
@@ -31,8 +31,28 @@ const initialValues: NoteFormValues = {
     tag: 'Todo',
 }
 
-export default function NoteForm({ onClose, onCreate}: NoteFormProps) {
+const createToast = () => toast.success('Note created successfully!');
+const createToastError = () => toast.error('Failed to create the note. Please try later.');
+
+export default function NoteForm({ onClose}: NoteFormProps) {
     const formId = useId();
+    
+    const queryClient = useQueryClient();
+
+    const createMutation = useMutation({
+		mutationFn: createNote,
+		onSuccess: () => {
+			createToast();
+			queryClient.invalidateQueries({ queryKey: ['notes'] });
+		},
+		onError: () => {
+			createToastError();
+		}
+	});
+
+	const onCreate = ({title, content, tag}: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => {
+		createMutation.mutate({title, content, tag});
+	}
 
     const handleSubmit = (values: NoteFormValues, actions: FormikHelpers<NoteFormValues>) => {
         console.log(values);

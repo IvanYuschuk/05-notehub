@@ -3,17 +3,18 @@ import css from './Pagination.module.css';
 
 interface PaginationProps {
     totalPages: number;
-    setCurrentPage: (page: number) => void;
+    forcePage: number;
+    onPageChange: (page: number) => void;
 };
 
-export default function Pagination({ totalPages, setCurrentPage }: PaginationProps) {
+export default function Pagination({ totalPages, forcePage, onPageChange }: PaginationProps) {
     return (
         <ReactPaginate
             pageCount={totalPages}
             pageRangeDisplayed={5}
             marginPagesDisplayed={1}
-            onPageChange={({ selected }) => setCurrentPage(selected + 1)}
-        
+            onPageChange={({ selected }) => onPageChange(selected + 1)}
+            forcePage={forcePage - 1} 
             containerClassName={css.pagination}
             activeClassName={css.active}
             nextLabel="→"
